@@ -19,7 +19,7 @@ function preload()
 {
      flyingBird = loadSound("Sounds/Bird_Robin_Chirps_Angry.mp3");
      selectBird = loadSound("Sounds/angbirds.wav");
-    getBackgroundImg();
+     backgroundImg = loadImage("sprites/bg1.png");
 }
 
 function setup(){
@@ -61,7 +61,6 @@ function setup(){
 }
 
 function draw(){
-    if(backgroundImg)
         background(backgroundImg);
     
         noStroke();

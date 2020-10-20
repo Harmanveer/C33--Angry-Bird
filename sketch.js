@@ -12,7 +12,13 @@ var gameState = "onSling";
 var bg = "sprites/bg1.png";
 var score = 0;
 
-function preload() {
+var birds = [];
+
+var flyingBird, selectBird;
+function preload() 
+{
+     flyingBird = loadSound("Sounds/Bird_Robin_Chirps_Angry.mp3");
+     selectBird = loadSound("Sounds/angbirds.wav");
     getBackgroundImg();
 }
 
@@ -41,6 +47,14 @@ function setup(){
     log5 = new Log(870,120,150, -PI/7);
 
     bird = new Bird(200,50);
+    bird1 = new Bird(150,170);
+    bird2 = new Bird(100,170);
+    bird3 = new Bird(50,170);
+
+    birds.push(bird3);
+    birds.push(bird2);
+    birds.push(bird1);
+    birds.push(bird);
 
     //log6 = new Log(230,180,80, PI/2);
     slingshot = new SlingShot(bird.body,{x:200, y:50});
@@ -75,40 +89,68 @@ function draw(){
     log5.display();
 
     bird.display();
+    bird1.display();
+    bird2.display();
+    bird3.display();
+
     platform.display();
     //log6.display();
     slingshot.display();    
 }
 
-function mouseDragged(){
-    //if (gameState!=="launched"){
-        Matter.Body.setPosition(bird.body, {x: mouseX , y: mouseY});
-    //}
-}
-
-
-function mouseReleased(){
-    slingshot.fly();
-    gameState = "launched";
-}
-
-function keyPressed(){
-    if(keyCode === 32){
-       slingshot.attach(bird.body);
+function mouseDragged()
+{
+    if (gameState!=="launched")
+    {
+        Matter.Body.setPosition(birds[birds.length- 1].body, {x: mouseX , y: mouseY});
+        Matter.Body.applyForce(birds[birds.length-1].body, birds[birds.length-1].body.position, {x:5, y:-5});
     }
 }
 
-async function getBackgroundImg(){
+
+function mouseReleased()
+{
+    slingshot.fly();
+    birds.pop();
+    gameState = "launched";
+
+    flyingBird.play();
+}
+
+function keyPressed()
+{
+    if(keyCode === 32 && gameState === "launched")
+    {
+        if(birds.length >= 0)
+        {
+        Matter.Body.setPosition(birds[birds.length-1].body, {x:200, y:50});
+
+        slingshot.attach(birds[birds.length-1].body);
+
+        bird.trajectory =[];
+        //console.log(bird.trajectory)
+
+        gameState = "onSling";
+   
+        selectBird.play();
+        }
+    }
+}
+
+async function getBackgroundImg()
+{
     var response = await fetch("http://worldtimeapi.org/api/timezone/Asia/Kolkata");
     var responseJSON = await response.json();
 
     var datetime = responseJSON.datetime;
     var hour = datetime.slice(11,13);
     
-    if(hour>=0600 && hour<=1900){
+    if(hour>=0600 && hour<=1900)
+    {
         bg = "sprites/bg1.png";
     }
-    else{
+    else
+    {
         bg = "sprites/bg2.jpg";
     }
 
